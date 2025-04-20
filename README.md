@@ -1,4 +1,4 @@
-## create database in mysql
+### create database in mysql
 
 
 CREATE DATABASE attendance_mng;
@@ -126,6 +126,18 @@ CREATE TABLE notice (
     department VARCHAR(255),
     FOREIGN KEY (u_id) REFERENCES user(u_id)
 );
+
+### Inseert Values
+
+INSERT INTO department (d_name)
+values ('admin');
+INSERT INTO department (d_name)
+values ('teacher');
+
+INSERT INTO user (d_id, u_name, role, email, password, otp)
+VALUES (1, 'Admin User', 'admin', 'admin@example.com', '1234', NULL);
+INSERT INTO user (d_id, u_name, role, email, password, otp)
+VALUES (2, 'default', 'teacher', 'default@example.com', '1234', NULL);
 
 
 
