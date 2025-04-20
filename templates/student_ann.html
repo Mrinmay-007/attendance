@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen p-4">
+
+  <!-- Notices Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {% for notice in notices %}
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg" x-data="{ open: false }">
+      <h3 class="text-xl font-semibold mb-2">{{ notice.title }} </h3>
+      <p class="text-sm text-gray-400 mb-2">Date: {{ notice.date }}</p>
+
+      <button @click="open = !open"
+        class="mb-4 text-blue-500 underline hover:text-blue-400 transition"
+        x-text="open ? 'Hide' : 'View'">
+      </button>
+
+      <div x-show="open" x-transition class="mb-4 text-gray-300">
+        {{ notice.content }}
+      </div>
+
+      <p class="mb-4 font-bold">By: {{ notice.name }}</p>
+
+      {% if notice.file_data %}
+      <a href="{{ url_for('download_file', notice_id=notice.id) }}"
+        class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        Download Attachment
+      </a>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- No Notices Available -->
+  <div class="text-center mt-8">
+    {% if not notices %}
+      <p class="text-gray-400">No announcements available.</p>
+    {% endif %}
+  </div>
+ 
+</body>
+</html>

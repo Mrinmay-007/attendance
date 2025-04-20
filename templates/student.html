@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Attendance Dashboard</title>
+</head>
+<body class="bg-[#1f1f1f]">
+
+    <!-- Top Navbar Start -->
+    <div class="w-full bg-[#181818] shadow-lg py-4 px-6 flex justify-between items-center fixed top-0 left-0 right-0 z-50">
+        <h3 class=" text-lg text-white font-semibold">Welcome - {{student.u_name}} ( {{}} )</h3>
+        <form action="/logout">
+            <div class="text-left flex justify-end items-center gap-4">
+                <button type="submit" class="flex items-center gap-2 px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg shadow-md transition duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" x2="9" y1="12" y2="12"></line>
+                    </svg>
+                    Logout
+                </button>
+            </div>
+        </form>
+    </div>
+    <!-- Top Navbar End -->
+
+    <div class="max-w-6xl mx-auto mt-24 p-6">
+
+        <center>
+            <h2 class="text-xl font-semibold text-white bg-gradient-to-r from-[#2e2e2e] to-[#4b5563] p-5 rounded-xl shadow-lg">
+              Need to attend classes: 
+              <span class="text-green-400 font-bold text-2xl">{{ nd_attn }}</span>
+            </h2>
+          </center>
+          <br>
+          
+          
+          
+          
+        <div class="overflow-x-auto bg-gray-900 shadow-2xl rounded-xl">
+            <table class="w-full border-collapse rounded-xl overflow-hidden">
+              <thead>
+                <tr class="bg-gradient-to-r from-[#3B0764] to-[#1E40AF] text-white text-center text-sm md:text-base uppercase tracking-wide">
+                  <th class="py-4 px-6">Student Name</th>
+                  {% for sub_id in sub.sub_id %}
+                    <th class="py-4 px-6">{{ sub_id }}</th>
+                  {% endfor %}
+                  <th class="py-4 px-6">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="even:bg-gray-800 odd:bg-gray-700 hover:bg-blue-900 text-center text-gray-300 text-sm md:text-base transition duration-300">
+                  <td class="py-4 px-6 font-semibold">{{ student.u_name }}</td>
+                  {% for atn_data in atn %}
+                    <td class="py-4 px-6">
+                      <div class="font-semibold">{{ atn_data.attended }}/{{ atn_data.total }}</div>
+                      {% if atn_data.total > 0 %}
+                        {% set percentage = (Total.attended / Total.total) * 100 %}
+                        <div class="text-sm text-blue-400 font-semibold">
+                          {{ percentage | round(2) }}%
+                        </div>
+                      {% else %}
+                        <div class="text-sm text-red-400">N/A</div>
+                      {% endif %}
+                    </td>
+                  {% endfor %}
+                  <td class="py-4 px-6 font-bold">
+                    {{ Total.attended }}/{{ Total.total }}<br>
+                    {% if Total.total > 0 %}
+                      {% set percentage = (Total.attended / Total.total) * 100 %}
+                      <span class="text-sm font-semibold {% if percentage < 75 %} text-red-500 {% else %} text-green-400 {% endif %}">
+                        {{ percentage | round(2) }}%
+                      </span>
+                    {% else %}
+                      <span class="text-sm text-red-400">N/A</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+         
+          <div class="flex gap-10 p-10">
+            <a href="notice" class="flex-1">
+              <div class="bg-gradient-to-r from-[#064e3b] to-[#10b981] hover:from-[#022c22] hover:to-[#059669] text-white p-6 rounded-full shadow-xl text-center font-bold text-lg transition duration-300 transform hover:scale-105 hover:shadow-2xl">
+                Notice
+              </div>
+            </a>
+            <a href="ann" class="flex-1">
+              <div class="bg-gradient-to-r from-[#4c1d95] to-[#8b5cf6] hover:from-[#2e1065] hover:to-[#7c3aed] text-white p-6 rounded-full shadow-xl text-center font-bold text-lg transition duration-300 transform hover:scale-105 hover:shadow-2xl">
+                Announcement
+              </div>
+            </a>
+          </div>
+          
+          
+          
+ 
+    </div>
+
+</body>
+</html>

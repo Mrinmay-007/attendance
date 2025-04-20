@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Attendance Page</title>
+</head>
+<body class="bg-[#1f1f1f] text-white font-sans">
+
+  
+    <!-- Top Navbar Start -->
+  <div class="w-full bg-[#181818] text-white shadow-md py-4 px-6 flex justify-between items-center fixed top-0 left-0 right-0 z-50">
+      <input type="hidden" name="teacher_id" value="{{ teacher.u_id }}" />
+      <input type="hidden" name="teacher_name" value="{{ teacher.u_name }}" />
+  
+      <div>
+          <label for="jumpDate" class="font-semibold text-white">Jump to:</label>
+          <input type="date" id="jumpDate" class="border border-gray-300 p-1 rounded-md text-black" value="{{ date }}">
+          <button type="button" onclick="jumpToDate()" class="bg-blue-500 text-white px-4 py-1 rounded-md ml-2 hover:bg-blue-600">
+            Go
+          </button><br>
+          <h3 class="text-white font-semibold"><b class="text-[#FDF576]" >DATE : </b> <span id="currentDate">{{ date }}</span></h3>
+      </div>
+      <center>
+        <h3 class="text-xl font-semibold text-white dark:text-white">
+          {{ sub_name.sub_name }} ( {{ subject_id }} )
+        </h3>
+      </center>
+     
+      <div class="text-left flex items-center gap-4">
+        <div>
+          {% if teacher %}
+          <h3 class="text-white  font-semibold">Name: {{ teacher.u_name }}</h3>
+          <h3 class="text-white  font-semibold">ID: {{ teacher.u_id }}</h3>
+          
+          {% else %}
+          <h3 class="text-red-500">Error: Teacher not found</h3>
+          {% endif %}
+        </div>
+        <form action="/logout" method="GET">
+          <div class="text-left flex justify-end items-center gap-4">
+            <button type="submit" class="flex items-center gap-2 px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg shadow-md transition duration-300" >
+                  
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" x2="9" y1="12" y2="12"></line>
+              </svg>
+              Logout
+            </button>
+          </div>
+        </form>
+      </div>
+  </div>
+  
+    <!-- Top Navbar End -->
+    <form action="{{ url_for('submit_attendance_route') }}" method="POST">
+     <!-- Use .get() for safe access -->
+  
+      <div class="max-w-6xl mt-24 p-6 mx-4 bg-[#3B3B3B] rounded-lg shadow-lg w-64 h-32 text-white overflow-auto">
+        <p class="font-bold mb-2 ">Total Classes : {{ dates_with_serial | length }}</p>
+        
+        {% for entry in dates_with_serial %}
+          <p><span>{{ entry.get('sl_no') }} : </span> {{ entry.get('date') }}</p>
+        {% endfor %}
+      </div>
+      
+    <!-- Attendance Table Start max-w-6xl mt-24 mx-auto  p-6-->
+    <div class="max-w-6xl mt-6 p-6 mx-auto  bg-[#363636] rounded-lg " >
+      <h2 class="text-2xl font-semibold mb-4 text-white  text-center">Attendance Table</h2>
+      <div class="overflow-x-auto bg-white shadow-lg rounded-lg">
+        
+        <table class="border-separate border-spacing-y-2  w-full text-black">
+          <thead>
+            <tr class="bg-[#002033] text-white text-center">
+              <th class="py-3 px-5">University Roll</th>
+              <th class="py-3 px-5">Class Roll</th>
+              <th class="py-3 px-5">Name</th>
+              <th class="py-3 px-5">Status</th>
+              <th class="py-3 px-5">Present</th>
+              <th class="py-3 px-5">Attendance</th>
+              <th class="py-3 px-5">Attendance Details</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-300 space-y-4">
+          
+            {% for student in students %}
+            <tr  class="hover:bg-gray-200  border border-black">
+              <td class="border border-gray-300 px-4 py-2">{{ student['u_roll'] }}</td>
+              <td class="border border-gray-300 px-4 py-2">{{ student['c_roll'] }}</td>
+              <td class="border border-gray-300 px-4 py-2">{{ student['name'] }}</td>
+              <td class="border border-gray-300 px-4 py-2">
+                {% set today_status = None %}
+                {% for record in student_attendance_details.get(student['u_roll'], []) %}
+                  {% if record.date == date %}
+                    {% set today_status = record.status %}
+                  {% endif %}
+                {% endfor %}
+
+                <div class="flex space-x-4">
+                  <!-- Present -->
+                  <label class="relative cursor-pointer">
+                    <input type="radio" name="attendance_{{ student['u_roll'] }}" value="P" class="peer hidden" 
+                      {% if today_status == "P" %}checked{% endif %}>
+                    <span class="flex items-center justify-center w-10 h-10 rounded-full border border-black text-green-600 font-bold peer-checked:bg-green-600 peer-checked:text-white transition-all">
+                      P
+                    </span>
+                  </label>
+                
+                  <!-- Absent -->
+                  <label class="relative cursor-pointer">
+                    <input type="radio" name="attendance_{{ student['u_roll'] }}" value="A" class="peer hidden" 
+                      {% if today_status == "A" %}checked{% endif %}>
+                    <span class="flex items-center justify-center w-10 h-10 rounded-full border border-black text-red-800 font-bold peer-checked:bg-red-600 peer-checked:text-white transition-all">
+                      A
+                    </span>
+                  </label>
+                
+                  <!-- Late -->
+                  <label class="relative cursor-pointer">
+                    <input type="radio" name="attendance_{{ student['u_roll'] }}" value="L" class="peer hidden" 
+                      {% if today_status == "L" %}checked{% endif %}>
+                    <span class="flex items-center justify-center w-10 h-10 rounded-full border border-black text-yellow-500 font-bold peer-checked:bg-yellow-500 peer-checked:text-black transition-all">
+                      L
+                    </span>
+                  </label>
+                </div>
+                
+
+
+              </td>
+              <td class="border border-gray-300 px-4 py-2">{{ attendance_dict.get(student['u_roll'], 0) }} / {{ total_classes }}</td>
+              <td class="border border-gray-300 px-4 py-2
+                {% if total_classes > 0 and (attendance_dict.get(student['u_roll'], 0) / total_classes * 100) >= 75 %}
+                  text-green-600
+                {% else %}
+                  text-red-600
+                {% endif %}">
+                {% if total_classes > 0 %}
+                  {{ (attendance_dict.get(student['u_roll'], 0) / total_classes * 100)|round(2) }}%
+                {% else %}
+                  N/A
+                {% endif %}
+              </td>
+              <td class="border border-gray-300 px-4 py-2">
+                {% if student_attendance_details.get(student['u_roll']) %}
+                  <ul class="text-left">
+                    {% for record in student_attendance_details[student['u_roll']] %}
+                      <li>
+                        <span class="font-bold">{{ record.date }}</span>: 
+                        <span class="
+                          {% if record.status == 'P' %} text-green-500 
+                          {% elif record.status == 'A' %} text-red-500 
+                          {% else %} text-yellow-500 {% endif %}">
+                          {{ record.status }}
+                        </span>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <span class="text-gray-500">No Data</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          
+          </tbody>
+        </table>
+      </div>
+    
+      <div class="mt-6 text-center">
+        <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-6 rounded-md transition duration-200">
+          Submit Attendance
+        </button>
+        <br>
+      </div>
+
+      
+    </div>
+    <!-- Attendance Table End -->
+
+  </div>
+
+  </form>
+
+  <script>
+
+    function jumpToDate() {
+      const selectedDate = document.getElementById("jumpDate").value;
+      if (!selectedDate) {
+        alert("Please select a date!");
+        return;
+      }
+      window.location.href = `/attendance?date=${selectedDate}`;
+    }
+  </script>
+  
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,90 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+</head>
+
+<body class="bg-[#0c2d3b] min-h-screen flex items-center justify-center relative">
+  <div class="absolute top-4 left-4">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="logo" class="w-35 h-32 object-contain">
+  </div>
+  
+
+  <div class="w-full max-w-md bg-gradient-to-r from-[#0c2d3b] to-[#17475a] p-8 rounded-2xl shadow-lg shadow-cyan-500/50 text-white z-10 border border-cyan-500">
+ 
+      <!-- <div class="flex justify-center mb-6">
+        
+            <img src="{{ url_for('static', filename='wave2.png') }}" alt="wave" class="w-28 h-28 object-contain">
+        
+        
+      </div> -->
+  
+    
+
+    <h2 class="text-3xl font-semibold text-center mb-2">Login as {{ role.capitalize() }}</h2>
+
+    <form method="POST" action="">
+      <input type="hidden" name="role" value="{{ role }}">
+
+      <div class="mb-4">
+        <label for="email" class="block text-sm font-medium text-white">Email</label>
+        <input type="email" id="email" name="email" required placeholder="Login"
+          class="w-full px-4 py-3 rounded-md bg-[#113945] text-white focus:outline-none focus:ring-2 focus:ring-green-400">
+      </div>
+
+      <div class="mb-6">
+        <label for="password" class="block text-sm font-medium text-white mb-1">Password</label>
+        
+        <div class="relative">
+          <input type="password" id="password" name="password" required placeholder="Password"
+            class="w-full px-4 py-3 rounded-md bg-[#113945] text-white focus:outline-none focus:ring-2 focus:ring-green-400">
+          
+          <!-- Eye Icon -->
+          <i id="togglePassword" class="ph ph-eye-slash absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-green-400 text-lg"></i>
+        </div>
+      </div>
+      
+
+      <div class="flex items-center justify-between mb-6 text-sm">
+        <label class="flex items-center">
+            <input type="checkbox" class="mr-2">
+            Remember me
+        </label>
+        <a href="#" class="text-green-400 hover:underline">Forgot password?</a>
+    </div>
+      <button type="submit"
+        class="w-full bg-green-400 hover:bg-green-500 text-white py-3 rounded-md font-semibold transition duration-300">Login</button>
+    </form>
+  </div>
+
+  <!-- Background Waves -->
+  <div class="absolute bottom-0 w-full">
+    <svg viewBox="0 0 1440 320" class="w-full">
+      <path fill="#113945" fill-opacity="1"
+        d="M0,192L60,170.7C120,149,240,107,360,117.3C480,128,600,192,720,197.3C840,203,960,149,1080,144C1200,139,1320,181,1380,202.7L1440,224L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z">
+      </path>
+    </svg>
+  </div>
+  
+<script>
+  const togglePassword = document.getElementById('togglePassword');
+  const password = document.getElementById('password');
+
+  togglePassword.addEventListener('click', () => {
+    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+    password.setAttribute('type', type);
+
+    togglePassword.classList.toggle('ph-eye');
+    togglePassword.classList.toggle('ph-eye-slash');
+  });
+</script>
+</body>
+
+</html>

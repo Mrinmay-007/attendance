@@ -1,0 +1,107 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notice Board</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="//unpkg.com/alpinejs" defer></script>
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen p-4">
+  
+  <!-- Logout Button -->
+  <form action="/logout">
+    <div class="flex justify-end items-center gap-4 mb-6">
+      <button type="submit" class="flex items-center gap-2 px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg shadow-md transition duration-300">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" x2="9" y1="12" y2="12"></line>
+        </svg>
+        Logout
+      </button>
+    </div>
+  </form>
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+
+    <!-- 🟧 Left Sidebar: Notices List -->
+    <div class="md:col-span-1 bg-gray-900 p-4 rounded-lg shadow-lg overflow-y-auto max-h-screen">
+      <h2 class="text-2xl font-bold text-center mb-4 text-white">Notice Board</h2>
+  
+      {% if notices %}
+      <div class="space-y-4">
+        {% for notice in notices %}
+        <div class="bg-gray-800 p-4 rounded-lg shadow" x-data="{ open: false }">
+          <h3 class="text-lg font-semibold text-white">
+            {{ notice.title }} ({{ notice.department }})
+          </h3>
+          <p class="text-xs text-gray-400">Date: {{ notice.date }}</p>
+  
+          <button @click="open = !open"
+                  class="text-blue-500 underline text-sm mt-2 hover:text-blue-400"
+                  x-text="open ? 'Hide' : 'View'"></button>
+  
+          <div x-show="open" x-transition class="text-gray-300 text-sm mt-2">
+            {{ notice.content }}
+          </div>
+  
+          <p class="mt-2 text-sm font-semibold text-white">By: {{ notice.name }}</p>
+  
+          {% if notice.file_data %}
+          <a href="{{ url_for('download_file', notice_id=notice.id) }}"
+             class="block mt-2 text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-center">
+             Download
+          </a>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-gray-400 text-center">No announcements available.</p>
+      {% endif %}
+    </div>
+  
+    <!-- 🟩 Right Body: Announcement Form -->
+    <div class="md:col-span-3 bg-gray-800 p-6 rounded-lg shadow-lg">
+      <h2 class="text-2xl font-bold mb-4 text-center text-white">Post a New Announcement</h2>
+  
+      <form class="space-y-4" action="/announcement" method="POST" enctype="multipart/form-data">
+        
+        <div>
+          <label class="block text-gray-300 font-semibold mb-1">Title:</label>
+          <input type="text" name="title" class="border border-black rounded-md p-2 w-full text-black" placeholder="Enter title" required>
+        </div>
+  
+        <div>
+          <label class="block text-gray-300 font-semibold mb-1">Your Message:</label>
+          <textarea name="content" rows="3" class="border border-black rounded-md p-2 w-full text-black" placeholder="Write your announcement..." required></textarea>
+        </div>
+  
+        <div>
+          <label class="block text-gray-300 font-semibold mb-1">Upload Attachment (optional):</label>
+          <input type="file" name="file_data" class="border border-black rounded-md p-2 w-full text-gray-300">
+        </div>
+  
+        <div>
+          <label class="block text-gray-300 font-semibold mb-1">Select Departments:</label>
+          {% for dept in dept %}
+            <div class="flex items-center mb-1">
+              <input type="checkbox" name="departments" value="{{ dept }}" id="dept_{{ dept|replace(' ', '_') }}" class="mr-2">
+              <label for="dept_{{ dept|replace(' ', '_') }}" class="text-white">{{ dept }}</label>
+            </div>
+          {% endfor %}
+        </div>
+  
+        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 w-full">
+          Post Announcement
+        </button>
+      </form>
+    </div>
+  </div>
+  
+
+</body>
+</html>

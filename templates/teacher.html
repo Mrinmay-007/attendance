@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Teacher Dashboard</title>
+  </head>
+  <body class="bg-gray-900 text-white">
+    <div class="container mx-auto px-6 py-12">
+
+      <form action="/logout">
+        <div class="text-left flex justify-end items-center gap-4">
+          <button type="submit" class="flex items-center gap-2 px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg shadow-md transition duration-300" >
+                
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" x2="9" y1="12" y2="12"></line>
+            </svg>
+            Logout
+          </button>
+        </div>
+      </form>
+      
+
+      <h2 class="text-3xl font-bold text-center mb-8">Teacher Dashboard</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  
+      <div
+          onclick="openModal()"
+          class="bg-gray-800 p-6 rounded-lg text-center flex flex-col items-center"
+        >
+          <img src="/static/attn.png" class="w-32 h-32 object-contain mb-3" alt="Attendance Icon" />
+          <h3 class="text-lg font-semibold text-orange-400 mb-1">Marked Attendance</h3>
+          <p class="text-gray-400 text-sm">All elements are fully resizable</p>
+      </div>
+
+
+      <a href="announcement">
+      <div  
+          class="bg-gray-800 p-6 rounded-lg text-center flex flex-col items-center"
+        >
+        <img src="/static/announcement.png" class="w-32 h-32 object-contain mb-3 filter invert brightness-0" alt="Announcement Icon" />
+          <h3 class="text-lg font-semibold text-orange-400 mb-1">Announcement</h3>
+          <p class="text-gray-400 text-sm">All elements are fully resizable</p>
+        </div>
+      </a>
+
+      <a href="notice">
+      <div  
+          class="bg-gray-800 p-6 rounded-lg text-center flex flex-col items-center"
+        >
+        <img src="/static/notice.png" class="w-32 h-32 object-contain mb-3 filter invert brightness-0" alt="Notice Icon" />
+          <h3 class="text-lg font-semibold text-orange-400 mb-1">Notice</h3>
+          <p class="text-gray-400 text-sm">All elements are fully resizable</p>
+        </div>
+      </a>
+        
+      <a href="details">
+        <div  
+            class="bg-gray-800 p-6 rounded-lg text-center flex flex-col items-center"
+          >
+          <img src="/static/details.png" class="w-32 h-32 object-contain mb-3 filter invert brightness-0" alt="Notice Icon" />
+            <h3 class="text-lg font-semibold text-orange-400 mb-1">Details</h3>
+            <p class="text-gray-400 text-sm">All elements are fully resizable</p>
+          </div>
+        </a>
+    </div>
+  </div>
+
+    
+    <!-- Modal (Hidden by Default) -->
+    <div id="attendanceModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+      <div class="bg-white p-6 rounded-lg shadow-lg w-96 text-black">
+        <h2 class="text-xl font-bold mb-4 text-center">Enter Details</h2>
+        <form id="attendanceForm" action="/attendance" method="POST">
+          <label for="department" class="block mb-2">Department Name:</label>
+          <select name="department" id="department" class="w-full p-2 border rounded mb-4" required onchange="fetchSemesters()">
+            <option value="">-- Select Department --</option>
+            {% for dept in departments %}
+            <option value="{{ dept }}">{{ dept }}</option>
+            {% endfor %}
+          </select>
+          <div class="flex gap-4">
+            <div class="w-1/2">
+              <label for="year" class="block mb-2">Year:</label>
+              <select name="year" id="year" class="w-full p-2 border rounded mb-4" required onchange="fetchSemesters()">
+                <option value="">-- Select Year --</option>
+                {% for y in years %}
+                <option value="{{ y }}">{{ y }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="w-1/2">
+              <label for="sem" class="block mb-2">Semester:</label>
+              <select name="sem" id="sem" class="w-full p-2 border rounded mb-4" required onchange="fetchSubjects()">
+                <option value="">-- Select Sem --</option>
+              </select>
+            </div>
+          </div>
+          <label for="subject" class="block mb-2">Subject:</label>
+          <select id="subject" name="subject" class="w-full p-2 border rounded mb-4" required>
+            <option value="">-- Select Subject --</option>
+          </select>
+          <label for="date">Date:</label>
+          <div class="w-full p-2 border rounded mb-4">
+            <input type="date" id="date" name="date" required />
+          </div>
+          <div class="flex justify-end space-x-2">
+            <button type="button" onclick="closeModal()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Cancel</button>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      function openModal() {
+        document.getElementById("attendanceModal").classList.remove("hidden");
+      }
+      function closeModal() {
+        document.getElementById("attendanceModal").classList.add("hidden");
+      }
+      function fetchSemesters() {
+        let year = document.getElementById("year").value;
+        let semDropdown = document.getElementById("sem");
+        semDropdown.innerHTML = '<option value="">Loading...</option>';
+        if (year) {
+          fetch(`/get_semesters?year=${year}`)
+            .then(response => response.json())
+            .then(data => {
+              semDropdown.innerHTML = '<option value="">-- Select Sem --</option>';
+              data.semesters.forEach(sem => {
+                let option = document.createElement("option");
+                option.value = sem;
+                option.textContent = sem;
+                semDropdown.appendChild(option);
+              });
+            })
+            .catch(error => console.error("Error fetching semesters:", error));
+        } else {
+          semDropdown.innerHTML = '<option value="">-- Select Year --</option>';
+        }
+      }
+      function fetchSubjects() {
+        let department = document.getElementById("department").value;
+        let year = document.getElementById("year").value;
+        let sem = document.getElementById("sem").value;
+        let subjectDropdown = document.getElementById("subject");
+        subjectDropdown.innerHTML = '<option value="">Loading...</option>';
+        if (department && year && sem) {
+          fetch(`/get_subjects?department=${department}&year=${year}&sem=${sem}`)
+            .then(response => response.json())
+            .then(data => {
+              subjectDropdown.innerHTML = '<option value="">-- Select Subject --</option>';
+              data.subjects.forEach(sub => {
+                let option = document.createElement("option");
+                option.value = sub.sub_id;
+                option.textContent = sub.name;
+                subjectDropdown.appendChild(option);
+              });
+            })
+            .catch(error => console.error("Error fetching subjects:", error));
+        } else {
+          subjectDropdown.innerHTML = '<option value="">-- Select Department, Year & Sem --</option>';
+        }
+      }
+    </script>
+  </body>
+</html>

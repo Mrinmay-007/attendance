@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notice</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+</head>
+
+<body class="bg-gray-900 text-white px-6 py-12">
+    <form action="/logout">
+        <div class="text-left flex justify-end items-center gap-4">
+            <button type="submit" class="flex items-center gap-2 px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg shadow-md transition duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" x2="9" y1="12" y2="12"></line>
+                </svg>
+                Logout
+            </button>
+        </div>
+    </form>
+    <div>
+        <h2 class="text-3xl font-bold text-center mb-8">Notice Board</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for notice in notices %}
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg" x-data="{ open: false }">
+                <h3 class="text-xl font-semibold mb-2">{{ notice.title }}</h3>
+                <p class="text-sm text-gray-400 mb-2">Date: {{ notice.date }}</p>
+            
+                <button @click="open = !open"
+                    class="mb-4 text-blue-500 underline hover:text-blue-400 transition"
+                    x-text="open ? 'Hide' : 'View'">
+                </button>
+            
+                <div x-show="open" x-transition class="mb-4 text-gray-300">
+                    {{ notice.content }}
+                </div>
+            
+                <p class="mb-4 font-bold">By: {{ notice.name }}</p>
+            
+                {% if notice.file_data %}
+                <a href="{{ url_for('download_file', notice_id=notice.id) }}"
+                    class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                    Download Attachment
+                </a>
+                {% endif %}
+            </div>
+            
+            {% endfor %}
+        </div>
+    </div>
+
+</body>
+
+</html>
